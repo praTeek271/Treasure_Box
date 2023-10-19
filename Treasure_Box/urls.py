@@ -19,10 +19,17 @@ from . import views
 from django.conf.urls.static import static
 from django.conf import settings
 
+app_name = 'Treasure_Box'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('shop.urls')),
-    path('homepage', views.index, name='home'),
+    path('login/',include('login.urls')),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL,document_root=settings.STATICFILES_DIRS)
+    urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

@@ -39,13 +39,150 @@ padding-left: 0,
 padding-right: 0;
 }
 {% endblock %}
+
+{% block style %} 
+<style>
+    .signin{
+     filter: blur(20px);
+     pointer-events: none;
+     user-select: none;
+   }
+   #popup{
+       position:fixed;
+       top:40%;
+       left:50%;
+       transform:translate(-50%,-50%);
+       width: auto;
+       padding: 60px;
+       box-shadow:0 5px 30px rgba(0, 0, 0, 30);
+       background: #fefefe;
+       visibility: hidden;
+       opacity: 0;
+       transition: 0.5s;
+   }
+ 
+   #popup.blur{
+     top:50%;
+     visibility: visible;
+     opacity: 1;
+     transition: 0.5s;
+    
+   }
+ /* ---------------------------------- */
+  .popup .container{
+     display: grid;
+     grid-template-rows: repeat(auto-fill,minmax(20px,1fr));
+     grid-gap: 50px;
+  }
+ 
+  .signll{
+   width: 100%; 
+   padding: 12px 20px; 
+   margin: 8px 0; 
+   display: inline-block; 
+   border: 1px solid #ccc; 
+   box-sizing: border-box;
+  }
+  .loginbtn{
+   background-color:#94cc33
+  }
+  .popup h1{margin: 8px 36%; 
+ background-color:white;}
+ .navbar .getstarted,
+ .navbar .getstarted:focus {
+   background: #8a60eb6c;
+   padding: 8px 20px;
+   margin-left: 30px;
+   border-radius: 4px;
+   color: #fff;
+ }
+ 
+ .navbar .getstarted:hover,
+ .navbar .getstarted:focus:hover {
+   color: #000000;
+   background: #8a60ebad;
+ }
+ 
+ /*set the display image inside the container*/
+ .imgcontainer{
+     text-align: center;
+     margin: 24px 0 12px 0;
+     position: relative;
+ }
+ /*set image properties*/
+ img.avatar{
+     width: 30%;
+     height:auto;
+     border-radius: 50%;
+     border: 8px solid #edebec;
+ }
+ .inner-area img{
+     height: 100%;
+     width: 100%;
+     border-radius: 50%;
+     object-fit: cover;
+ }
+  
+  .popup .modal-content{
+     background-color: #fefefe;
+     margin:  5% auto 15% auto;  
+  
+     border: 1px solid #888;
+     width: 400px;
+     border: 6px solid #edebec;
+ }
+   .popup button{
+      background-color: #4caf50;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+  }
+  /* set a hover effect for the button*/
+  .popup  button:hover{
+      opacity: 0.8;
+  }
+  .feadback-btn{
+   background-color: #8960eb57;
+  }
+  .feadback-btn:hover{
+   background-color:#8a60eb98 ;
+   cursor: pointer;
+   border: none;
+  }
+  .header .logo img {
+   max-height: 206px;
+   margin-right: 6px;
+   margin-top: 38px;
+   display: flex;
+   position: absolute;
+ }
+ .header .logo img {
+   max-height: 172px;
+   margin-right: 6px;
+   margin-top: -2px;
+   display: flex;
+   position: absolute;
+ }
+ form{
+    border: none;
+ }
+   </style>
+{% endblock %}
+
+
 {% block body %}
 {% load static %}
-<div class="container">
-    <!--Slideshow starts here -->
+<div class="container" id="blur">
+    
+    <!-- banner headings -->
     <h5 class="my-4" style="color: aquamarine;">One location for all the  .!. OFFERS .!. </h5>
     {% for product, range, nSlides in allProds %}
     <h5 class="my-4" style="color: coral;">Flash Sale On {{product.0.category}} - Recommended Items</h5>
+
+    <!-- product slidshow -->
     <div class="row">
         <div id="demo{{forloop.counter}}" class="col carousel slide my-3" data-ride="carousel">
             <ul class="carousel-indicators">
@@ -89,8 +226,61 @@ padding-right: 0;
     </div>
     {% endfor %}
 </div>
+
+<div id="popup">
+    
+    <!-------------------- Sign_in box --------------------->
+    <form action="{% url 'signin'%}" method="POST" class="modal-content animate" style="">
+          {% csrf_token %}
+              <div class="imgcontainer"> 
+          <a class="getstarted" href="#" onClick="toggle_sign_in()"><i class='bx bx-cross bx-tada bx-rotate-270' 
+            style=" 
+              font-size: 20px;  
+              position: fixed;
+              display: flex;
+              align-items: flex-end;
+              left: 80%;
+              top: 4%;
+              border: 3px dashed #b1a5d4;
+              border-radius: 50%;">
+              </i> </a>
+              <img src= "{% static 'assets/user.png' %}" alt="Avatar" class="avatar"> 
+              </div> 
+  
+                  <label><b>Username</b></label> 
+                  <input type="text" class="signll" placeholder="Enter Username" name="username" required> 
+  
+                  <label><b>Password</b></label> 
+                  <input type="password" class="signll" placeholder="Enter Password" name="password" required> 
+  
+                  <button type="submit" class="signll loginbtn" value="Sign In">Login</button> 
+          <div class="signup" style="display: grid;grid-template-columns: max-content;">
+            <span>
+              Create an account <a href="{% url 'signup' %}">Sign Up</a>
+            </span>
+          </div>
+          </form> 
+  
+      
+    </div>
+
 {% endblock %}
 {% block js %}
+
+<!-- sign in pop over -->
+<script>
+    function toggle_sign_in(){
+        var blur =document.getElementById('blur');
+        blur.classList.toggle('signin');
+        var popup =document.getElementById('popup');
+        popup.classList.toggle('blur');
+    }
+{% if user.is_authenticated %}
+alert("Login Sucessful");
+{% endif %}
+
+</script>
+
 <script>
 // Find out the cart items from localStorage
 if (localStorage.getItem('cart') == null) {
@@ -134,7 +324,8 @@ function updatePopover(cart) {
     }
 
     popStr = popStr + "</div> <a href='{% url 'Checkout'%}'><button class='btn btn-primary' id ='checkout'>Checkout</button></a> <button class='btn btn-primary' onclick='clearCart()' id ='clearCart'>Clear Cart</button>     "
-    console.log(popStr);
+    // console.log(popStr);
+
     document.getElementById('popcart').setAttribute('data-content', popStr);
     $('#popcart').popover('show');
 

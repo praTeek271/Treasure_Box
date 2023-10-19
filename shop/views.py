@@ -3,8 +3,8 @@ from .models import Product, Contact, Orders, OrderUpdate
 from math import ceil
 import json
 from django.views.decorators.csrf import csrf_exempt
-# Create your views here.
 from django.http import HttpResponse
+from django.utils.safestring import mark_safe
 
 def index(request):
     allProds = []
@@ -16,6 +16,10 @@ def index(request):
         nSlides = n // 4 + ceil((n / 4) - (n // 4))
         allProds.append([prod, range(1, nSlides), nSlides])
     params = {'allProds':allProds}
+    # add user data
+    users=request.user
+    params['username']=users
+
     return render(request, 'shop/index.html', params)
 
 def searchMatch(query, item):
@@ -85,8 +89,9 @@ def tracker(request):
 def productView(request, myid):
 
     # Fetch the product using the id
-    product = Product.objects.filter(id=myid)
-    return render(request, 'shop/prodView.html', {'product':product[0]})
+    product = Product.objects.get(id=myid)
+    product_desc = mark_safe(product.desc)
+    return render(request, 'shop/prodView.html', {'product':product, 'product_desc':product_desc})
 
 
 def checkout(request):
