@@ -23,9 +23,9 @@ app_name = 'Treasure_Box'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('shop',include('shop.urls')),
+    path('',include('shop.urls')),
     path('login/',include('login.urls')),
-    path('',views.index,name='index'),
+    path('home/',views.index,name='index'),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
